@@ -22,22 +22,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class EncryptionUtil implements PasswordEncoder{
 	// Spring Security가 기본적을 제공하는 암호화 기법 : SHA 기반
-	private PasswordEncoder passwordEncoder;
+	private static PasswordEncoder passwordEncoder;
 
 	public EncryptionUtil() {
-		this.passwordEncoder = new BCryptPasswordEncoder();
+		EncryptionUtil.passwordEncoder = new BCryptPasswordEncoder();
 	}
 
 	public EncryptionUtil(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
+		EncryptionUtil.passwordEncoder = passwordEncoder;
 	}
 
 	// Triple DES Encoding and Decoding + AES Encoding and Decoding
 	// key값 리턴
-	private String key(String hint) {
+	private static String key(String hint) {
 		// 24자리(24바이트)만 key 값으로 입력 가능
-		char[] compareValue = ("k1cj4w3ib@9lhvsd!7x0aqtm#rg2y$6epu5zn8fo").toCharArray();
-		char[] addRootKey = ("rauOhonSTHgom8812").toCharArray();
+		char[] compareValue = ("****************************************").toCharArray();
+		char[] addRootKey = ("*****************").toCharArray();
 
 		String keyValue = "";
 		char[] hintchar = hint.toCharArray();
@@ -69,7 +69,7 @@ public class EncryptionUtil implements PasswordEncoder{
 	 * 지정된 비밀키를 가지고 오는 메서드 (TripleDES) require Key Size : 24 bytes
 	 * 임의의 key값으로 암호화와 복호화 가능 
 	 */
-	private Key getKey(String keyValue) throws Exception {
+	private static Key getKey(String keyValue) throws Exception {
 		//System.out.println(keyValue);
 		DESedeKeySpec desKeySpec = new DESedeKeySpec(keyValue.getBytes());
 		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
@@ -78,7 +78,7 @@ public class EncryptionUtil implements PasswordEncoder{
 	}
 
 	// AES 256 
-	private HashMap<String, Object> AES256Key(String hint) throws UnsupportedEncodingException {
+	private static HashMap<String, Object> AES256Key(String hint) throws UnsupportedEncodingException {
 		String iv;
 	    Key key;
 	    HashMap<String, Object> mapAES = new HashMap<String, Object>();
@@ -128,7 +128,7 @@ public class EncryptionUtil implements PasswordEncoder{
 	 * @return String 암호화된 DATA
 	 * @exception Exception
 	 */
-	public String TripleDesEncoding(String data, String hint) throws Exception {
+	public static String TripleDesEncoding(String data, String hint) throws Exception {
 		if (data == null || data.length() == 0) {	return "";}
 
 		String instance = (key(hint).length() == 24) ? "DESede/ECB/PKCS5Padding"
@@ -156,7 +156,7 @@ public class EncryptionUtil implements PasswordEncoder{
 	 * @return String 복호화된 DATA
 	 * @exception Exception
 	 */
-	public String TripleDesDecoding(String encryptionData, String hint) throws Exception {
+	public static String TripleDesDecoding(String encryptionData, String hint) throws Exception {
 		if (encryptionData == null || encryptionData.length() == 0)
 			return "";
 
@@ -173,7 +173,7 @@ public class EncryptionUtil implements PasswordEncoder{
 	}
 
 	 // AES256 암호화
-    public String aesEncode(String str, String hint) throws java.io.UnsupportedEncodingException, 
+    public static String aesEncode(String str, String hint) throws java.io.UnsupportedEncodingException, 
                                                     NoSuchAlgorithmException, 
                                                     NoSuchPaddingException, 
                                                     InvalidKeyException, 
@@ -194,7 +194,7 @@ public class EncryptionUtil implements PasswordEncoder{
     }
  
     //AES256 복호화
-    public String aesDecode(String str, String hint) throws java.io.UnsupportedEncodingException,
+    public static String aesDecode(String str, String hint) throws java.io.UnsupportedEncodingException,
                                                         NoSuchAlgorithmException,
                                                         NoSuchPaddingException, 
                                                         InvalidKeyException, 
