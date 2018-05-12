@@ -26,6 +26,7 @@ import java.util.Locale;
  * 		달의 마지막날	: getLastDay("yyyyMMdd")					return "dd"
  * 		날짜포맷변환	: getThisDay("yyyyMMdd", "yyyy/mm/dd") 		retrun "yyyy/MM/dd"
  * 		일자의 요일		: getDateDay("yyyyMMdd")					return "월"
+ * 		두 날짜의 차이	: getDaysDiff("yyyyMMdd", "yyyyMMdd")		return	int
  * </pre>
  */
 public class DateUtil {
@@ -33,7 +34,7 @@ public class DateUtil {
     /**
      * 현재 년월 - YYYYMM
      */
-    private static String getYearMonth() {
+    public static String getYearMonth() {
         String month;
 
         Calendar cal = Calendar.getInstance(Locale.getDefault());
@@ -53,7 +54,7 @@ public class DateUtil {
     /**
      * 현재 년월일 - YYYYMMDD
      */
-    private static String getDate() {
+    public static String getDate() {
         String month, day;
 
         Calendar cal = Calendar.getInstance(Locale.getDefault());
@@ -77,7 +78,7 @@ public class DateUtil {
     /**
      * 현재 시간 - HHMISS
      */
-    private static String getTime() {
+    public static String getTime() {
         String hour, min, sec;
 
         Calendar cal = Calendar.getInstance(Locale.getDefault());
@@ -112,7 +113,7 @@ public class DateUtil {
      *            더할 일자
      * @return 특정날짜에 일자를 더한 값
      */
-    private static String getAddDay(String DateTime, int plusDay) {
+    public static String getAddDay(String DateTime, int plusDay) {
 
         if (DateTime == null)
             return "";
@@ -167,7 +168,7 @@ public class DateUtil {
      *            더할 일자
      * @return 특정날짜에 일자를 더한 값
      */
-    private static String getAddMonth(String DateTime, int plusMonth) {
+    public static String getAddMonth(String DateTime, int plusMonth) {
 
         if (DateTime == null)
             return "";
@@ -216,7 +217,7 @@ public class DateUtil {
     /**
      * 어제 날짜 - YYYYMMDD
      */
-    private static String getYesterday() {
+    public static String getYesterday() {
         java.util.GregorianCalendar sToday = new java.util.GregorianCalendar();
         sToday.add(GregorianCalendar.DAY_OF_MONTH, -1);
 
@@ -244,7 +245,7 @@ public class DateUtil {
     /**
      * 내일 날짜 - YYYYMMDD
      */
-    private static String getTomorrow() {
+    public static String getTomorrow() {
         java.util.GregorianCalendar sToday = new java.util.GregorianCalendar();
         sToday.add(GregorianCalendar.DAY_OF_MONTH, 1);
 
@@ -277,7 +278,7 @@ public class DateUtil {
      *
      * @return 검사결과
      */
-    private static boolean isDate(String param) {
+    public static boolean isDate(String param) {
         if (param == null || param.length() != 8)
             return false;
 
@@ -307,7 +308,7 @@ public class DateUtil {
      *
      * @return 검사결과
      */
-    private static boolean isTime(String param) {
+    public static boolean isTime(String param) {
         if (param == null || param.length() != 6)
             return false;
 
@@ -334,7 +335,7 @@ public class DateUtil {
      * @param date
      * @return 해당 달의 마지막 날
      */
-    private static String getLastDay(String date) {
+    public static String getLastDay(String date) {
         return getLastDay(Integer.parseInt(date.substring(0, 4)), Integer
                 .parseInt(date.substring(4, 6)), false);
     }
@@ -348,7 +349,7 @@ public class DateUtil {
      *            - 구하려는 달이 현재달일 경우 현재 날짜를 리턴할지
      * @return 해당 달의 마지막 날
      */
-    private static String getLastDay(int yyyy, int mm, boolean isNowDate) {
+    public static String getLastDay(int yyyy, int mm, boolean isNowDate) {
         Calendar calendar = Calendar.getInstance();
         String str = "";
         if (isNowDate && mm == calendar.get(Calendar.MONTH) + 1) {
@@ -369,7 +370,7 @@ public class DateUtil {
      * @param type
      * @return String
      */
-    private static String getFormatDay(String date, String type) {
+    public static String getFormatDay(String date, String type) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd") ;
         Date stringToDate = null;
@@ -408,7 +409,7 @@ public class DateUtil {
      * @return Date
      * @throws ParseException
      */
-    private static Date transformDate(String date) throws ParseException {
+    public static Date transformDate(String date) throws ParseException {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd") ;
         SimpleDateFormat afterFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -429,7 +430,7 @@ public class DateUtil {
      * @param date "yyyyMMdd"
      * @return String 월 ~ 일
      */
-    private static String getDateDay(String date) {
+    public static String getDateDay(String date) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd") ;
 
@@ -475,5 +476,39 @@ public class DateUtil {
                 break ;
         }
         return day ;
+    }
+    
+    /**
+     * 입력된 두 날짜의 차이를 int 형으로 반환한다.
+     * @param sDate1
+     * @param sDate2
+     * @return int
+     * 예제
+     * 		"20180512", "20180512" = 0
+     * 		"20180512", "20180511" = -1
+     * 		"20180412", "20180511" = 29
+     * 		"20190512", "20180511" = -366
+     * 		"20180512", "20190511" = 364
+     */
+    public static int getDaysDiff(String sDate1, String sDate2) {
+        String dateStr1 = sDate1;
+        String dateStr2 = sDate2;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+
+        Date date1 = null;
+        Date date2 = null;
+
+        try {
+            date1 = sdf.parse(dateStr1);
+            date2 = sdf.parse(dateStr2);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format : args[0] = " + sDate1 + " args[1] = "+ sDate2);
+        }
+
+        int days1 = (int) ((date1.getTime() / 3600000) / 24);
+        int days2 = (int) ((date2.getTime() / 3600000) / 24);
+
+        return days2 - days1;
     }
 }
